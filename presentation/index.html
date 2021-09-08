@@ -4,11 +4,13 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Intro to Django Models</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<!-- <link rel="stylesheet" href="dist/theme/black.css"> -->
+		<link rel="stylesheet" href="dist/theme/white.css">
+		<link rel="stylesheet" href="dist/custom.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
@@ -16,8 +18,129 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h2>Intro to Django Models</h2>
+				</section>
+				<section>
+					<h3>What is Django?</h3>
+					<p>A Python (<a href="https://www.python.org/">https://www.python.org/</a>) framework primary intended for
+						building web applications.</p>
+				</section>
+				<section>
+					<h3>Key Django Features</h3>
+					<ul>
+						<li>Views for handling HTTP requests & responses</li>
+						<li>A template language for generating HTML (Also supports Jinja templates)</li>
+						<li>An Object Relational Mapping (ORM) system.  <span class="aside">(The focus of this talk)</span></li>
+						<li>Authentication system</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Object Relational Mapping (ORM)</h3>
+					<p>A technique for representing database tables as classes in your Python code.</p>
+				</section>
+				<section>
+					<h3>Database items and ORM equivalents</h3>
+					<table>
+						<thead>
+							<tr>
+								<th>DB</th>
+								<th>ORM</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Table</td>
+								<td>Class</td>
+							</tr>
+							<tr>
+								<td>Record</td>
+								<td>Instance of Class</td>
+							</tr>
+							<tr>
+								<td>Column of table</td>
+								<td>Property of Class</td>
+							</tr>
+							<tr>
+								<td>Field of record</td>
+								<td>Property of Instance</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+				<section>
+					<h4>ORMs in Other Languages</h4>
+					<table>
+						<tbody>
+							<tr>
+								<td>Java</td>
+								<td>
+									<ul>
+										<li>Hibernate</li>
+										<li>Java Persistence Architecture (JPA)</li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>.Net&nbsp;(C#,&nbsp;etc.)</td>
+								<td>Entity Framework</td>
+							</tr>
+							<tr>
+								<td>Ruby</td>
+								<td>Ruby on Rails <span class="aside">(Ruby's Django Equivalent)</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+				<section>
+					<h4>SQLAlchemy</h4>
+					<div class="aside">(Python's other ORM)</div>
+					<table>
+						<thead>
+							<tr>
+								<th>SQLAlchemy</th>
+								<th>Django</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>More Powerful</td>
+								<td>Less Powerful</td>
+							</tr>
+							<tr>
+								<td>More Difficult to Use</td>
+								<td>Easier to Use</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>Integrated with other features of django framework</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+				<section>
+					<h4>Linux/Unix/MacOS setup</h4>
+					<p>The venv standard lib module may be in a separate package from
+						your python install.  The command to fix this on Ubuntu Linux &amp;
+						derivatives is:</p>
+					<pre>
+						<code>sudo apt-get install python3-venv</code>
+					</pre>
+				</section>
+				<section>
+					<h4>Create and Activate Virtual environment</h4>
+					<p>Virtual environments are directories where we can install 3rd-party
+						libraries without messing up our system-wide Python install.</p>
+					<pre>
+						<code>
+							python3 -m venv shopping_list-venv
+							source shopping_list-venv/bin/activate
+							# In Powershell use: &amp; shopping_list-venv/Scripts/activate.ps1
+							mkdir shopping_list
+							cd shopping_list
+						</code>
+					</pre>
+				</section>
 			</div>
 		</div>
 
