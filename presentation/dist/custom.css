@@ -1,5 +1,15 @@
 
 .aside{
     font-style: italic;
+    font-size: 80%;
     color: darkgray;
+}
+
+
+body.custom h1,
+body.custom h2,
+body.custom h3,
+body.custom h4{
+    color: crimson;
+    text-transform: none;
 }

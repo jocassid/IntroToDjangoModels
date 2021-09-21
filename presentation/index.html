@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Intro to Django Models</title>
+		<title>Intro to Django ORM</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -15,32 +15,40 @@
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
 	</head>
-	<body>
+	<body class="custom">
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h2>Intro to Django Models</h2>
+					<h2 class="custom">Intro to Django ORM</h2>
 				</section>
 				<section>
-					<h3>What is Django?</h3>
+					<h3 class="custom">What is Django?</h3>
 					<p>A Python (<a href="https://www.python.org/">https://www.python.org/</a>) framework primary intended for
 						building web applications.</p>
 				</section>
 				<section>
 					<h3>Key Django Features</h3>
 					<ul>
+						<li>An Object Relational Mapping (ORM) system.</li>
 						<li>Views for handling HTTP requests & responses</li>
 						<li>A template language for generating HTML (Also supports Jinja templates)</li>
-						<li>An Object Relational Mapping (ORM) system.  <span class="aside">(The focus of this talk)</span></li>
 						<li>Authentication system</li>
 					</ul>
 				</section>
 				<section>
-					<h3>Object Relational Mapping (ORM)</h3>
+					<h3 class="custom">Object Relational Mapping (ORM)</h3>
 					<p>A technique for representing database tables as classes in your Python code.</p>
 				</section>
+        <section>
+          <h3>Advantages of ORMS</h3>
+          <ul>
+            <li>No coding move data between SQL commands and Python code</li>
+            <li>ORM code considerably less verbose than SQL statements.</li>
+            <li>Helps make your codebase portable between databases.</li>
+          </ul>
+        </section>
 				<section>
-					<h3>Database items and ORM equivalents</h3>
+					<h3 class="custom">Database items and ORM equivalents</h3>
 					<table>
 						<thead>
 							<tr>
@@ -69,7 +77,7 @@
 					</table>
 				</section>
 				<section>
-					<h4>ORMs in Other Languages</h4>
+					<h3 class="custom">ORMs in Other Languages</h3>
 					<table>
 						<tbody>
 							<tr>
@@ -93,7 +101,7 @@
 					</table>
 				</section>
 				<section>
-					<h4>SQLAlchemy</h4>
+					<h3 class="custom">SQLAlchemy</h3>
 					<div class="aside">(Python's other ORM)</div>
 					<table>
 						<thead>
@@ -119,7 +127,19 @@
 					</table>
 				</section>
 				<section>
-					<h4>Linux/Unix/MacOS setup</h4>
+					<h3 class="custom">Create and Activate Virtual environment</h3>
+					<p>Virtual environments are directories where we can install 3rd-party
+						libraries without messing up our system-wide Python install.</p>
+					<pre>
+						<code>
+python3 -m venv shopping_list-venv
+source shopping_list-venv/bin/activate
+# In Powershell use: &amp; shopping_list-venv/Scripts/activate.ps1
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3 class="custom">Linux/Unix/MacOS setup</h3>
 					<p>The venv standard lib module may be in a separate package from
 						your python install.  The command to fix this on Ubuntu Linux &amp;
 						derivatives is:</p>
@@ -128,19 +148,235 @@
 					</pre>
 				</section>
 				<section>
-					<h4>Create and Activate Virtual environment</h4>
-					<p>Virtual environments are directories where we can install 3rd-party
-						libraries without messing up our system-wide Python install.</p>
+					<h3 class="custom">Install Django into Virtual Env</h3>
 					<pre>
-						<code>
-							python3 -m venv shopping_list-venv
-							source shopping_list-venv/bin/activate
-							# In Powershell use: &amp; shopping_list-venv/Scripts/activate.ps1
-							mkdir shopping_list
-							cd shopping_list
-						</code>
+						<code>pip install django</code>
 					</pre>
 				</section>
+				<section>
+					<h3 class="custom">Create Django Project</h3>
+					<pre>
+						<code>
+django-admin startproject shopping_list
+cd shopping_list
+						</code>
+					</pre>
+					<h3 class="custom">Contents of shopping_list directory</h3>
+					<pre>
+						<code>
+-rwxrwxr-x 1 john john  669 Sep 15 00:45 manage.py
+drwxrwxr-x 2 john john 4.0K Sep 15 00:45 shopping_list
+						</code>
+					</pre>
+					<div class="aside">Be sure to add manage.py to your version control system</div>
+				</section>
+				<section>
+					<h3 class="custom">Add App to Project</h3>
+					<pre>
+						<code>./manage.py startapp main</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Contents of Django Project</h3>
+					<pre>
+						<code>├── main
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── manage.py
+└── shopping_list
+    ├── asgi.py
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+</code>
+					</pre>
+				</section>
+				<section>
+					<h3 class="custom">Add main to the list of installed apps</h3>
+					<p>In shopping_list/shopping_list/settings.py</p>
+					<pre>
+						<code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'main',
+]</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Database Settings</h3>
+					<div class="aside">Most major databases are supported, SQLite is used by default in settings.py</div>
+					<pre>
+						<code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Migrations</h3>
+					<div class="aside">At this point we just have migrations for Django tables for sessions, users, etc.</div>
+					<pre>
+						<code>python ./manage.py showmigrations</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Apply Migrations</h3>
+					<pre>
+						<code>python ./manage.py migrate</code>
+					</pre>
+				</section>
+        <section>
+          <h3>Creating Our First Model</h3>
+          <pre>
+            <code>class StoreType(models.Model):
+
+    name = models.CharField(
+        max_length=50,
+        unique=True,
+    )</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Make Migrations / Migrate</h3>
+          <div class="aside">(Do this after any changes to the models)</div>
+          <pre>
+            <code>python ./manage.py makemigrations main
+python ./manage.py migrate</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Create a superuser for your Django Project</h3>
+          <pre>
+            <code>python ./manage.py createsuperuser</code>
+          </pre>
+        </section>
+        <section>
+          <h3 class="custom">Set Up Admin for StoreType</h3>
+          <pre>
+            <code>from django.contrib import admin
+from .models import StoreType
+
+@admin.register(StoreType)
+class StoreTypeAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')</code>
+          </pre>
+        </section>
+        <section>
+          <h3 class="custom">Start the Dev Server</h3>
+          <pre>
+            <code>python ./manage.py runserver</code>
+          </pre>
+
+          <p>Navigate to <a href="http://127.0.0.1:8000/admin/">http://127.0.0.1:8000/admin/</a>
+          and add a StoreType via the admin interface then hit &lt;CTRL-c&gt;
+          at the command line to stop the server.</p>
+        </section>
+        <section>
+          <h3>Open the Django shell</h3>
+          <pre>
+            <code>python ./manage.py shell</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Create another Store Type</h3>
+          <pre>
+            <code>>>> from main.models import StoreType
+>>> store_type = StoreType(name='Grocery')
+>>> store_type.save()
+>>> store_type.pk
+2
+</code>
+          </pre>
+          <div class="aside">SQL: <code>INSERT INTO main_storetype (name) VALUES ('main');</code></div>
+        </section>
+        <section>
+          <h3>The one-liner way of creating an object</h3>
+          <pre>
+            <code>>>> store_type = StoreType.objects.create(name='Pharmacy')
+>>> store_type.pk
+3</code>
+          </pre>
+        </section>
+        <section>
+          <h3>List all the StoreTypes in the database</h3>
+          <pre>
+            <code>>>>StoreType.objects.all()
+&lt;QuerySet [&lt;StoreType: StoreType object (1)&gt;, &lt;StoreType: StoreType object (2)&gt;, &lt;StoreType: StoreType object (3)&gt;]></code>
+          </pre>
+          <div class="aside">SQL: SELECT * FROM main_storetype;</div>
+        </section>
+        <section>
+          <h3>Getting the SQL from a Queryset object</h3>
+          <pre>
+            <code>>>> str(StoreType.objects.all().query)
+'SELECT "main_storetype"."id", "main_storetype"."name" FROM "main_storetype"'</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Add the following to the StoreType class, to make query results more readable</h3>
+          <pre>
+            <code>    def __repr__(self):
+        return f"&lt;StoreType: {self.name} ({self.pk})&gt;"</code>
+          </pre>
+          <p>Exit the Django shell with &lt;CTRL-z&gt;, restart and import StoreType</p>
+          <pre>
+            <code>>>> StoreType.objects.all()
+&lt;QuerySet [&lt;StoreType: Hardware (1)&gt;, &lt;StoreType: Grocery (2)&gt;, &lt;StoreType: Pharmacy (3)&gt;]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>Create a second Model</h3>
+          <p>In models.py:</p>
+          <pre>
+            <code>class Store(models.Model):
+
+    name = models.CharField(
+        max_length=50,
+        unique=True,
+    )
+
+    types = models.ManyToManyField(
+        StoreType,
+        related_name='stores',
+    )</code>
+          </pre>
+          <div class="aside">Make and run migrations</div>
+        </section>
+        <section>
+          <h3>Add a ModelAdmin class for Store</h3>
+          <pre>
+            <code>@admin.register(Store)
+class StoreAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')</code>
+          </pre>
+          <p>runserver and add a Store via the admin interface</p>
+        </section>
+        <section>
+          <h3></h3>
+          <pre>
+            <code></code>
+          </pre>
+        </section>
+        <section>
+          <h3></h3>
+          <pre>
+            <code></code>
+          </pre>
+        </section>
 			</div>
 		</div>
 
