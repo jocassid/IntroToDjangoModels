@@ -176,7 +176,23 @@ drwxrwxr-x 2 john john 4.0K Sep 15 00:45 shopping_list
 						<code>./manage.py startapp main</code>
 					</pre>
 				</section>
+
 				<section>
+					<h3 class="custom">Add main to the list of installed apps</h3>
+					<p>In shopping_list/shopping_list/settings.py</p>
+					<pre>
+						<code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'main',
+]</code>
+					</pre>
+				</section>
+        				<section>
 					<h3>Contents of Django Project</h3>
 					<pre>
 						<code>├── main
@@ -196,21 +212,6 @@ drwxrwxr-x 2 john john 4.0K Sep 15 00:45 shopping_list
     ├── urls.py
     └── wsgi.py
 </code>
-					</pre>
-				</section>
-				<section>
-					<h3 class="custom">Add main to the list of installed apps</h3>
-					<p>In shopping_list/shopping_list/settings.py</p>
-					<pre>
-						<code>INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'main',
-]</code>
 					</pre>
 				</section>
 				<section>
@@ -249,6 +250,7 @@ drwxrwxr-x 2 john john 4.0K Sep 15 00:45 shopping_list
         unique=True,
     )</code>
           </pre>
+          <p class="aside">By default, Models get an integer primary key field named 'id'</p>
         </section>
         <section>
           <h3>Make Migrations / Migrate</h3>
@@ -292,12 +294,12 @@ class StoreTypeAdmin(admin.ModelAdmin):
           </pre>
         </section>
         <section>
-          <h3>Create another Store Type</h3>
+          <h3>Create Another StoreType Record</h3>
           <pre>
             <code>>>> from main.models import StoreType
 >>> store_type = StoreType(name='Grocery')
 >>> store_type.save()
->>> store_type.pk
+>>> store_type.id
 2
 </code>
           </pre>
@@ -310,6 +312,8 @@ class StoreTypeAdmin(admin.ModelAdmin):
 >>> store_type.pk
 3</code>
           </pre>
+          <p class="aside">model_instance.pk will always return the primary
+            key value, no matter what it's named.</p>
         </section>
         <section>
           <h3>List all the StoreTypes in the database</h3>
@@ -325,6 +329,10 @@ class StoreTypeAdmin(admin.ModelAdmin):
             <code>>>> str(StoreType.objects.all().query)
 'SELECT "main_storetype"."id", "main_storetype"."name" FROM "main_storetype"'</code>
           </pre>
+          <div class="aside">I find this equivalent statement more convenient</div>
+          <pre>
+            <code>StoreType.objects.all().query.__str__()</code>
+          </pre>
         </section>
         <section>
           <h3>Add the following to the StoreType class, to make query results more readable</h3>
@@ -336,6 +344,28 @@ class StoreTypeAdmin(admin.ModelAdmin):
           <pre>
             <code>>>> StoreType.objects.all()
 &lt;QuerySet [&lt;StoreType: Hardware (1)&gt;, &lt;StoreType: Grocery (2)&gt;, &lt;StoreType: Pharmacy (3)&gt;]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>Select specific fields, get results as dictionaries</h3>
+          <pre>
+            <code>>>> StoreType.objects.values('pk', 'name')
+&lt;QuerySet [{'pk': 1, 'name': 'Hardware'}, {'pk': 2, 'name': 'Grocery'}, {'pk': 3, 'name': 'Pharmacy'}]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>Select specific fields, get results as tuples</h3>
+          <pre>
+            <code>>>> StoreType.objects.values_list('pk', 'name')
+&lt;QuerySet [(1, 'Hardware'), (2, 'Grocery'), (3, 'Pharmacy')]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>When you just want a single field</h3>
+          <p class="aside">And don't want tuples of 1 item</p>
+          <pre>
+            <code>>>> StoreType.objects.values_list('name', flat=True)
+&lt;QuerySet ['Hardware', 'Grocery', 'Pharmacy']></code>
           </pre>
         </section>
         <section>
@@ -354,21 +384,63 @@ class StoreTypeAdmin(admin.ModelAdmin):
         related_name='stores',
     )</code>
           </pre>
+        </section>
+        <section>
+          <h3>And a third</h3>
+          <pre>
+            <code>class Item(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+    )
+
+    store_type = models.ForeignKey(
+        'StoreType',  # Can reference a table using a string
+        null=True,  # No value stored as NULL in the database
+        blank=True,  # Value is not required to save the record
+        on_delete=models.SET_NULL,
+        related_name='items',
+    )</code>
+          </pre>
           <div class="aside">Make and run migrations</div>
         </section>
         <section>
-          <h3>Add a ModelAdmin class for Store</h3>
+          <h3>Add a ModelAdmin class for Store and Item</h3>
           <pre>
-            <code>@admin.register(Store)
+            <code>@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
+
+@admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name')</code>
           </pre>
-          <p>runserver and add a Store via the admin interface</p>
+          <p>runserver and add some Stores and Items via the admin interface</p>
         </section>
         <section>
-          <h3></h3>
+          <h3>Query With a Join</h3>
           <pre>
-            <code></code>
+            <code>>>> queryset = Item.objects.values_list('name', 'store_type__name')
+>>> str(queryset.query)
+'SELECT "main_item"."name", "main_storetype"."name" FROM "main_item" LEFT OUTER JOIN "main_storetype" ON ("main_item"."store_type_id" = "main_storetype"."id")'
+>>> list(queryset)
+[('Tomatoes', 'Grocery'), ('#8 screws 1 1/4 long', 'Hardware'), ('Cold Medicine', 'Pharmacy'), ('Lettuce', 'Grocery'), ('Paint Rollers', 'Hardware')]</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Filtering with a Join</h3>
+          <pre>
+            <code>>>> Item.objects.filter(store_type__name='Grocery')
+&lt;QuerySet [&lt;Item: Tomatoes>, &lt;Item: Lettuce>]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>exclude</h3>
+          <p class="aside">like <code>filter</code>, but in reverse</p>
+          <pre>
+            <code>>>> Item.objects.exclude(store_type__name='Grocery')
+&lt;QuerySet [&lt;Item: #8 screws 1 1/4 long>, &lt;Item: Cold Medicine>, &lt;Item: Paint Rollers>]></code>
           </pre>
         </section>
         <section>
