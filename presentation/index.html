@@ -444,6 +444,35 @@ class StoreAdmin(admin.ModelAdmin):
           </pre>
         </section>
         <section>
+          <h3>Using a field lookup</h3>
+          <p class="aside">By default the expressions that we've been using for
+            <code>filter</code>, <code>values_list</code>, etc.  Look for an
+            exact match, using</p>
+          <pre>
+            <code>>>> Item.objects.filter(store_type__name__iexact='grocery')
+&lt;QuerySet [&lt;Item: Tomatoes>, &lt;Item: Lettuce>]>
+</code>
+          </pre>
+        </section>
+        <section>
+          <h3></h3>
+          <pre>
+            <code></code>
+          </pre>
+        </section>
+        <section>
+          <h3></h3>
+          <pre>
+            <code></code>
+          </pre>
+        </section>
+        <section>
+          <h3></h3>
+          <pre>
+            <code></code>
+          </pre>
+        </section>
+        <section>
           <h3></h3>
           <pre>
             <code></code>
