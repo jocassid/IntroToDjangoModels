@@ -7,7 +7,7 @@ from .models import \
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'store_type')
+    list_display = ('pk', 'name', 'store_type', 'price')
 
 
 @admin.register(Store)

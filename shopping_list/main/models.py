@@ -41,6 +41,12 @@ class Item(models.Model):
         unique=True,
     )
 
+    price = models.DecimalField(
+        max_digits=9,
+        decimal_places=2,
+        default=0,
+    )
+
     store_type = models.ForeignKey(
         'StoreType',  # Can reference a table using a string
         null=True,  # No value stored as NULL in the database

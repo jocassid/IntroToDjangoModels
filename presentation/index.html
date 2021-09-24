@@ -20,6 +20,7 @@
 			<div class="slides">
 				<section>
 					<h2 class="custom">Intro to Django ORM</h2>
+          <p><a href="https://github.com/jocassid/IntroToDjangoORM">https://github.com/jocassid/IntroToDjangoORM</a></p>
 				</section>
 				<section>
 					<h3 class="custom">What is Django?</h3>
@@ -126,6 +127,15 @@
 						</tbody>
 					</table>
 				</section>
+        <section>
+					<h3 class="custom">Linux/Unix/MacOS setup</h3>
+					<p>The venv standard lib module may be in a separate package from
+						your python install.  The command to fix this on Ubuntu Linux &amp;
+						derivatives is:</p>
+					<pre>
+						<code>sudo apt-get install python3-venv</code>
+					</pre>
+				</section>
 				<section>
 					<h3 class="custom">Create and Activate Virtual environment</h3>
 					<p>Virtual environments are directories where we can install 3rd-party
@@ -136,15 +146,6 @@ python3 -m venv shopping_list-venv
 source shopping_list-venv/bin/activate
 # In Powershell use: &amp; shopping_list-venv/Scripts/activate.ps1
 						</code>
-					</pre>
-				</section>
-				<section>
-					<h3 class="custom">Linux/Unix/MacOS setup</h3>
-					<p>The venv standard lib module may be in a separate package from
-						your python install.  The command to fix this on Ubuntu Linux &amp;
-						derivatives is:</p>
-					<pre>
-						<code>sudo apt-get install python3-venv</code>
 					</pre>
 				</section>
 				<section>
@@ -347,6 +348,43 @@ class StoreTypeAdmin(admin.ModelAdmin):
           </pre>
         </section>
         <section>
+          <h3>Querysets may be indexed and sliced</h3>
+          <pre>
+            <code>>>> StoreType.objects.all()[1]
+&lt;StoreType: Grocery (2)>
+>>> StoreType.objects.all()[1:]
+&lt;QuerySet [&lt;StoreType: Grocery (2)>, &lt;StoreType: Pharmacy (3)>]>
+>>></code>
+          </pre>
+        </section>
+        <section>
+          <h3>Query with a <code>WHERE</code> clause.</h3>
+          <pre>
+            <code>>>> StoreType.objects.filter(name='Hardware')
+&lt;QuerySet [&lt;StoreType: Hardware (1)>]>
+>>> StoreType.objects.filter(name='Hardware').query.__str__()
+'SELECT "main_storetype"."id", "main_storetype"."name" FROM "main_storetype" WHERE "main_storetype"."name" = Hardware'</code>
+          </pre>
+        </section>
+        <section>
+          <h3>Get a Single Record from Table</h3>
+          <pre>
+            <code>>>> StoreType.objects.get(name='Hardware')
+&lt;StoreType: Hardware (1)></code>
+          </pre>
+          <p>If the record doesn't exist an Exception will be raised</p>
+          <pre>
+            <code>>>> StoreType.objects.get(name='hardware')
+Traceback (most recent call last):
+  File "&lt;console>", line 1, in &lt;module>
+  File "/home/john/Projects/IntroToDjangoORM/shopping_list-venv/lib/python3.6/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/home/john/Projects/IntroToDjangoORM/shopping_list-venv/lib/python3.6/site-packages/django/db/models/query.py", line 437, in get
+    self.model._meta.object_name
+main.models.StoreType.DoesNotExist: StoreType matching query does not exist.</code>
+          </pre>
+        </section>
+        <section>
           <h3>Select specific fields, get results as dictionaries</h3>
           <pre>
             <code>>>> StoreType.objects.values('pk', 'name')
@@ -395,6 +433,12 @@ class StoreTypeAdmin(admin.ModelAdmin):
         unique=True,
     )
 
+    price = models.DecimalField(
+        max_digits=9,
+        decimal_places=2,
+        default=0,
+    )
+
     store_type = models.ForeignKey(
         'StoreType',  # Can reference a table using a string
         null=True,  # No value stored as NULL in the database
@@ -410,7 +454,7 @@ class StoreTypeAdmin(admin.ModelAdmin):
           <pre>
             <code>@admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name')
+    list_display = ('pk', 'name', 'price')
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
@@ -453,17 +497,57 @@ class StoreAdmin(admin.ModelAdmin):
 &lt;QuerySet [&lt;Item: Tomatoes>, &lt;Item: Lettuce>]>
 </code>
           </pre>
+          <p><a href="https://docs.djangoproject.com/en/3.2/topics/db/queries/#field-lookups">Field
+            Lookups in Django Documentation</a></p>
         </section>
         <section>
-          <h3></h3>
+          <h3>Query with a Group by</h3>
           <pre>
-            <code></code>
+            <code>>>> from django.db.models import Count
+>>> StoreType.objects.annotate(store_count=Count('stores')).values_list('name', 'store_count')
+&lt;QuerySet [('Hardware', 1), ('Grocery', 2), ('Pharmacy', 2)]>
+>>> StoreType.objects.annotate(store_count=Count('stores')).values_list('name', 'store_count').query.__str__()
+'SELECT "main_storetype"."name", COUNT("main_store_types"."store_id") AS "store_count" FROM "main_storetype" LEFT OUTER JOIN "main_store_types" ON ("main_storetype"."id" = "main_store_types"."storetype_id") GROUP BY "main_storetype"."id", "main_storetype"."name"'</code>
+          </pre>
+          <p class="aside">With annotate you automatically get the primary key
+            field in your GROUP BY expressions</p>
+        </section>
+        <section>
+          <h3>Aggregate across Queryset</h3>
+          <pre>
+            <code>>>>from django.db.models import Avg
+>>> Item.objects.filter(store_type__name='Hardware').values_list('price')
+&lt;QuerySet [(Decimal('0.12'),), (Decimal('5.00'),)]>
+>>> Item.objects.filter(store_type__name='Hardware').aggregate(avg_price=Avg('price'))
+{'avg_price': Decimal('2.56000000000000')}
+</code>
           </pre>
         </section>
         <section>
-          <h3></h3>
+          <h3>select_related</h3>
+          <p>In the following a query is executed each time
+            <code>item.store_type</code> is accessed.</p>
           <pre>
-            <code></code>
+            <code>for item in Item.objects.all()[:2]:
+    print(item, item.store_type)</code>
+          </pre>
+          <p><code>select_related</code> pulls in the object referenced by
+            foreign key</p>
+          <pre>
+            <code>>>> Item.objects.select_related('store_type')[:3]
+&lt;QuerySet [&lt;Item: Tomatoes>, &lt;Item: #8 screws 1 1/4 long>]></code>
+          </pre>
+        </section>
+        <section>
+          <h3>prefetch_related</h3>
+          <p>Used when traversing a one-to-many or many-to-many relationship</p>
+          <pre>
+            <code>>>> StoreType.objects.prefetch_related('items')
+&lt;QuerySet [&lt;StoreType: Hardware (1)>, &lt;StoreType: Grocery (2)>, &lt;StoreType: Pharmacy (3)>]>
+>>> Store.objects.prefetch_related('types')
+&lt;QuerySet [&lt;Store: Rousch Hardware (1)>, &lt;Store: Target (2)>, &lt;Store: Kroger (3)>]>
+>>> StoreType.objects.prefetch_related('stores')
+&lt;QuerySet [&lt;StoreType: Hardware (1)>, &lt;StoreType: Grocery (2)>, &lt;StoreType: Pharmacy (3)>]></code>
           </pre>
         </section>
         <section>

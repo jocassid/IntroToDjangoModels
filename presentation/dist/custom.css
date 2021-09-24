@@ -5,11 +5,13 @@
     color: darkgray;
 }
 
-
 body.custom h1,
 body.custom h2,
 body.custom h3,
 body.custom h4{
-    color: crimson;
     text-transform: none;
+}
+
+body.custom p > code{
+    font-size: 80%;
 }
